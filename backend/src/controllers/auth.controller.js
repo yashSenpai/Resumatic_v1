@@ -80,3 +80,17 @@ export const logout = asyncHandler(async (req, res) => {
   res.clearCookie('refreshToken');
   res.json(new ApiResponse(200, null, "Logged out successfully"));
 });
+
+export const googleCallback = asyncHandler(async (req, res) => {
+  // passport strategy attaches { user, accessT, refreshT } (or user) to req.user
+  const payload = req.user || {};
+  const accessT = payload.accessT || payload.accessToken || payload.user?.accessT || payload.user?.accessToken;
+  const refreshT = payload.refreshT || payload.refreshToken || payload.user?.refreshT || payload.user?.refreshToken;
+
+  if (refreshT) {
+    res.cookie('refreshToken', refreshT, { httpOnly: true, sameSite: 'lax' });
+  }
+
+  const redirectBase = process.env.CORS_ORIGIN === '*' ? '/' : process.env.CORS_ORIGIN || '/';
+  return res.redirect(`${redirectBase}/auth/success?token=${accessT || ''}`);
+});

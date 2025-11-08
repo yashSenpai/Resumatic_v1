@@ -7,8 +7,8 @@ const router = express.Router();
 const upload = multer();
 
 router.use(verifyJWT);
-router.get('/', listResumes);
-router.post('/', createResume);
+router.get('/list-resumes', listResumes);
+router.post('/create-resume', createResume);
 router.post('/parse', upload.single('file'), parseResume);
 
 export default router;
